@@ -44,39 +44,47 @@ Table::Table(int n = 0) : n(n)
 bool Table::flip(Direction dir) noexcept
 {
 	std::vector<std::list<int>> gapes;
-
+	for (int i = 0; i < n; i++)
+	{
+		gapes.emplace_back();
+	}
 
 	switch (dir)
 	{
 	case Direction::DOWN: 
 		
-		for(int i = n * (n - 1); i >= 0; i -= n)	// az utolsó sor elejérõl akarunk indulni (n a négyzetalapú pálya oldalhossza)
+		for (int i = n * (n - 1); i >= 0; i -= n)	// az utolsó sor elejérõl akarunk indulni (n a négyzetalapú pálya oldalhossza)
 		{
 			for (int j = 0; j < n; ++j)			// elindulunk a sor legeléjérõl
 			{
 				if (t[i + j] == 0)				// ha üres (=0) a cella
 				{
 					gapes[j].push_back(i + j);
-				} 
+				}
 				else							// ha nem akkor...
 				{
 					int k = n;
 					bool foundEq = false;
 					while (i + j - k >= 0)		// megnézzük, hogy az adott elem fölött van-e egyezõség, üres cellákat kihagyva
 					{
-						if (t[i + j - k] != 0 && t[i + j] == t[i + j + k])  // megtaláltuk a fölöttünk lévõ elsõ egyezõ elemet
+						if (t[i + j] == t[i + j - k])  // megtaláltuk a fölöttünk lévõ elsõ egyezõ elemet
 						{
 							t[i + j] *= 2;			// a lentit megduplázzuk
 							t[i + j - k] = 0;		// a föntit eltünetjük
 
 							if (!gapes[j].empty())
 							{
-								t[gapes[j].back()] = t[i + j];
-								gapes[j].remove(gapes[j].back());
+								t[*gapes[j].cbegin()] = t[i + j];
+								gapes[j].erase(gapes[j].begin());
 								t[i + j] = 0;
 							}
 
 							foundEq = true;
+							break;
+						}
+
+						if (t[i + j - k] != 0)	// fölfelé menet nézzük a nullákat, ha kapunk egy olyat cellát ami nem nulla és nem is a keresett, akkor kilépünk
+						{
 							break;
 						}
 
@@ -87,14 +95,15 @@ bool Table::flip(Direction dir) noexcept
 					{
 						if (!gapes[j].empty())					// Ha van lejjebb üres cella
 						{
-							t[gapes[j].back()] = t[i + j];		// Kiválasztjuk a legmélyebben lévõt (a lista legutolsóját), majd ide mozgatjuk az adott elemet
-							gapes[j].remove(gapes[j].back());	// A listából kitöröljük, mert a legmélyebb index már foglalt
+							t[*gapes[j].cbegin()] = t[i + j];	// Kiválasztjuk a legmélyebben lévõt (a lista legutolsóját), majd ide mozgatjuk az adott elemet
+							gapes[j].erase(gapes[j].begin());	// A listából kitöröljük, mert a legmélyebb index már foglalt
 							t[i + j] = 0;						// Az adott elem régi helye most már üres
+							gapes[j].push_back(i + j);			// Itt muszáj foglalkoznunk az újonnan felszabadult mezõ listába adásához, nem bízhatjuk rá egy fölöttünk lévõ sorra
 						}
 					}
 				}
 			}
-		}		
+		}
 
 		break;
 
