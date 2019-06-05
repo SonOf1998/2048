@@ -1,17 +1,27 @@
 #pragma once
 
+#include <memory>
 #include <vector>
+
 #include "Direction.h"
+#include "Memento.h"
 
 class Table
 {
-	std::vector<int> t;
+private:
 
+	const int n;
+	std::vector<int> t;
+	int randomEmptyCellIndex() const noexcept;
+	int randomNewTile() const noexcept;
 
 public:
-	Table();
-	~Table();
+	Table(int n = 0);
+	~Table() = default;
 
-	bool flip(Direction d);
+	bool flip(Direction) noexcept;
+	std::unique_ptr<Memento> createMemento() const;
+	void restore(Memento&);
+	int getPoints() const noexcept;
 };
 

@@ -5,7 +5,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
 #include <glew.h>
 #include <freeglut.h>
 #include <vec2.hpp>
@@ -17,12 +16,14 @@
 #include <iostream>
 #include <vector>
 
+#define ESC 27
+#define SPACE 32
+
+
 
 
 const int WIDTH = 1440;
 const int HEIGHT = 810;
-
-const int ESC = 27;
 
 GLuint VBO;
 GPUProgram gpuProgram;
@@ -91,6 +92,11 @@ void onKeyDown(unsigned char c, int x, int y) noexcept
 	if (c == ESC)
 	{
 		exit(0);
+	}
+
+	if (c == SPACE)
+	{
+		// UNDO mûvelet
 	}
 }
 
