@@ -434,11 +434,8 @@ int main(int argc, char** argv)
 	glDebugMessageCallback(debugCallbackFunction, nullptr);
 
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// full nulla Z-knél megfordítja a rajzolási irányt. A késõbb jövõk nem mennek át a depth testen, azok lesznek alul.
-
 	onInitialization();
 
 	glutDisplayFunc(onDisplay);

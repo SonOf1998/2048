@@ -1,3 +1,5 @@
 ﻿  2048.cpp
 c:\c++ graphics\2048\2048\2048.cpp(277): error C2065: 'indices': undeclared identifier
 c:\c++ graphics\2048\2048\2048.cpp(277): error C2198: 'PFNGLBUFFERDATAPROC': too few arguments for call
+  Table.cpp
+  Generating Code...
