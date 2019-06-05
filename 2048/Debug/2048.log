@@ -1,2 +1,3 @@
 ﻿  2048.cpp
-  2048.vcxproj -> C:\C++ graphics\2048\Debug\2048.exe
+c:\c++ graphics\2048\2048\2048.cpp(277): error C2065: 'indices': undeclared identifier
+c:\c++ graphics\2048\2048\2048.cpp(277): error C2198: 'PFNGLBUFFERDATAPROC': too few arguments for call
