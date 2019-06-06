@@ -31,8 +31,17 @@ int Table::randomNewTile() const noexcept
 
 		return 2 * uid(rng);
 	}
-
 	return 2;
+}
+
+bool Table::isGameOver() const noexcept
+{
+	if (flipAllowed(Direction::DOWN) || flipAllowed(Direction::UP) || flipAllowed(Direction::LEFT) || flipAllowed(Direction::RIGHT))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 Table::Table(int n = 0) : n(n)
@@ -41,7 +50,7 @@ Table::Table(int n = 0) : n(n)
 	t[randomEmptyCellIndex()] = 2;
 }
 
-void Table::flip(Direction dir) noexcept
+bool Table::flip(Direction dir) noexcept
 {
 	std::vector<std::list<int>> gapes;
 	for (int i = 0; i < n; i++)
@@ -275,7 +284,7 @@ void Table::flip(Direction dir) noexcept
 
 	t[randomEmptyCellIndex()] = randomNewTile();
 
-	// check gameover
+	return isGameOver();
 }
 
 bool Table::flipAllowed(Direction dir) const noexcept

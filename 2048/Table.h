@@ -14,12 +14,13 @@ private:
 	std::vector<int> t;
 	int randomEmptyCellIndex() const noexcept;
 	int randomNewTile() const noexcept;
+	bool isGameOver() const noexcept;
 
 public:
 	Table(int n = 0);
 	~Table() = default;
 
-	void flip(Direction) noexcept;
+	bool flip(Direction) noexcept;
 	bool flipAllowed(Direction) const noexcept;
 	std::unique_ptr<Memento> createMemento() const;
 	void restore(Memento&);
