@@ -18,17 +18,11 @@
 
 #define ESC 27
 #define SPACE 32
-
-
-
-
-const int WIDTH = 1440;
-const int HEIGHT = 810;
+#define WIDTH 1440
+#define HEIGHT 810
 
 GLuint VBO;
 GPUProgram gpuProgram;
-
-
 
 #pragma region Shaders
 const char* VertexShader = R"(
@@ -148,23 +142,6 @@ void onIdle()
 	static int cnt = 0;
 
 	int time = glutGet(GLUT_ELAPSED_TIME);
-
-
-	if (time % 50 == 0)
-	{
-		//++cnt;
-		//glm::mat4 viewMtx = glm::lookAt
-		//(
-		//	glm::vec3(0.0f, 0.0f, -1.0f),	// camera position
-		//	glm::vec3(0.6f, 0.0f, 0.0f),	// where we looking at
-		//	glm::vec3(0.0f, 1.0f - cnt * dx, 0.0f)		// up vector often (0,1,0), rarely (0, -1, 0) if we're upside down
-		//);
-		//unsigned int location = glGetUniformLocation(gpuProgram.getId(), "V");
-		//glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(viewMtx));
-		//
-		//
-		// glutPostRedisplay();
-	}
 }
 
 void onDisplay()
@@ -422,7 +399,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - WIDTH) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - HEIGHT) / 2);
 	glutInitWindowSize(WIDTH, HEIGHT);
-	glutCreateWindow("9Ball Pool");
+	glutCreateWindow("OpenGL 4.3 2048");
 
 	glutInitContextVersion(4, 3);
 	glewExperimental = true;

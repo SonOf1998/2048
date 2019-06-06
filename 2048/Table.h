@@ -19,7 +19,8 @@ public:
 	Table(int n = 0);
 	~Table() = default;
 
-	bool flip(Direction) noexcept;
+	void flip(Direction) noexcept;
+	bool flipAllowed(Direction) const noexcept;
 	std::unique_ptr<Memento> createMemento() const;
 	void restore(Memento&);
 	int getPoints() const noexcept;

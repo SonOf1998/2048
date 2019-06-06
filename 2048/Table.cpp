@@ -41,7 +41,7 @@ Table::Table(int n = 0) : n(n)
 	t[randomEmptyCellIndex()] = 2;
 }
 
-bool Table::flip(Direction dir) noexcept
+void Table::flip(Direction dir) noexcept
 {
 	std::vector<std::list<int>> gapes;
 	for (int i = 0; i < n; i++)
@@ -276,6 +276,72 @@ bool Table::flip(Direction dir) noexcept
 	t[randomEmptyCellIndex()] = randomNewTile();
 
 	// check gameover
+}
+
+bool Table::flipAllowed(Direction dir) const noexcept
+{
+	switch (dir)
+	{
+	case Direction::UP:
+		for (int i = n; i < n * n; ++i)
+		{
+			if (t[i] != 0)
+			{
+				if (t[i - n] == t[i] || t[i - n] == 0)
+				{
+					return true;
+				}
+			}
+		}
+		break;
+
+	case Direction::DOWN:
+		for (int i = 0; i < n * (n - 1); ++i)
+		{
+			if (t[i] != 0)
+			{
+				if (t[i + n] == t[i] || t[i + n] == 0)
+				{
+					return true;
+				}
+			}
+		}
+		break;
+
+	case Direction::LEFT:
+		for (int i = 1; i < n; ++i)
+		{
+			for (int j = 0; j < n * n; j += n)
+			{
+				if (t[i + j] != 0)
+				{
+					if (t[i + j - 1] == t[i + j] || t[i + j - 1] == 0)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+
+	case Direction::RIGHT:
+		for (int i = 0; i < n - 1; ++i)
+		{
+			for (int j = 0; j < n * n; j += n)
+			{
+				if (t[i + j] != 0)
+				{
+					if (t[i + j + 1] == t[i + j] || t[i + j + 1] == 0)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+	}
+
+	return false;
 }
 
 std::unique_ptr<Memento> Table::createMemento() const
