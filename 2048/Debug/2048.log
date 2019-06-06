@@ -1,7 +1,6 @@
 ﻿  2048.cpp
 c:\c++ graphics\2048\2048\2048.cpp(283): error C2065: 'indices': undeclared identifier
 c:\c++ graphics\2048\2048\2048.cpp(283): error C2198: 'PFNGLBUFFERDATAPROC': too few arguments for call
-  Memento.cpp
   Table.cpp
 c:\c++ graphics\2048\2048\table.cpp(38): error C2572: 'Table::Table': redefinition of default argument: parameter 1
   c:\c++ graphics\2048\2048\table.h(19): note: see declaration of 'Table::Table'

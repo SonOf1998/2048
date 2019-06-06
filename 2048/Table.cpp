@@ -108,17 +108,174 @@ bool Table::flip(Direction dir) noexcept
 		break;
 
 	case Direction::UP: 
-		
+
+		for (int i = 0; i <= n * (n - 1); i += n)	// az utolsó sor elejérõl akarunk indulni (n a négyzetalapú pálya oldalhossza)
+		{
+			for (int j = 0; j < n; ++j)			// elindulunk a sor legeléjérõl
+			{
+				if (t[i + j] == 0)				// ha üres (=0) a cella
+				{
+					gapes[j].push_back(i + j);
+				}
+				else							// ha nem akkor...
+				{
+					int k = n;
+					bool foundEq = false;
+					while (i + j + k < n * n)		// megnézzük, hogy az adott elem alatt van-e egyezõség, üres cellákat kihagyva
+					{
+						if (t[i + j] == t[i + j + k])  // megtaláltuk a alattunk lévõ elsõ egyezõ elemet
+						{
+							t[i + j] *= 2;			// a föntit megduplázzuk
+							t[i + j + k] = 0;		// a lentit eltünetjük
+
+							if (!gapes[j].empty())
+							{
+								t[*gapes[j].cbegin()] = t[i + j];
+								gapes[j].erase(gapes[j].begin());
+								t[i + j] = 0;
+							}
+
+							foundEq = true;
+							break;
+						}
+
+						if (t[i + j + k] != 0)	// lefelé menet nézzük a nullákat, ha kapunk egy olyat cellát ami nem nulla és nem is a keresett, akkor kilépünk
+						{
+							break;
+						}
+
+						k += n;
+					}
+
+					if (!foundEq)	// ha nem találtunk egyezõséget alattunk
+					{
+						if (!gapes[j].empty())					// Ha van feljebb üres cella
+						{
+							t[*gapes[j].cbegin()] = t[i + j];	// Kiválasztjuk a legmélyebben lévõt (a lista legutolsóját), majd ide mozgatjuk az adott elemet
+							gapes[j].erase(gapes[j].begin());	// A listából kitöröljük, mert a legmélyebb index már foglalt
+							t[i + j] = 0;						// Az adott elem régi helye most már üres
+							gapes[j].push_back(i + j);			// Itt muszáj foglalkoznunk az újonnan felszabadult mezõ listába adásához, nem bízhatjuk rá egy alattunk lévõ sorra
+						}
+					}
+				}
+			}
+		}
 		break;
 
 	case Direction::LEFT: 
 		
+		for (int i = 0; i < n; ++i)							// az elsõ oszlop elejérõl akarunk indulni (n a négyzetalapú pálya oldalhossza)
+		{
+			for (int j = 0; j <= n * (n - 1); j += n)		// elindulunk az oszlop legeléjérõl
+			{
+				if (t[i + j] == 0)				// ha üres (=0) a cella
+				{
+					gapes[j / n].push_back(i + j);
+				}
+				else							// ha nem akkor...
+				{
+					int k = 1;
+					bool foundEq = false;
+					while (i + j + k < ((j / n) + 1) * n)		// megnézzük, hogy az adott elemtõl jobbra van-e egyezõség, üres cellákat kihagyva
+					{
+						if (t[i + j] == t[i + j + k])  // megtaláltuk a jobbra lévõ elsõ egyezõ elemet
+						{
+							t[i + j] *= 2;			// a bal oldalit megduplázzuk
+							t[i + j + k] = 0;		// a jobb oldalit eltünetjük
+
+							if (!gapes[j / n].empty())
+							{
+								t[*gapes[j / n].cbegin()] = t[i + j];
+								gapes[j / n].erase(gapes[j / n].begin());
+								t[i + j] = 0;
+							}
+
+							foundEq = true;
+							break;
+						}
+
+						if (t[i + j + k] != 0)	// jobbramenet nézzük a nullákat, ha kapunk egy olyat cellát ami nem nulla és nem is a keresett, akkor kilépünk
+						{
+							break;
+						}
+
+						++k;
+					}
+
+					if (!foundEq)	// ha nem találtunk egyezõséget alattunk
+					{
+						if (!gapes[j / n].empty())					// Ha van balra üres cella
+						{
+							t[*gapes[j / n].cbegin()] = t[i + j];	// Kiválasztjuk a legmélyebben lévõt (a lista legutolsóját), majd ide mozgatjuk az adott elemet
+							gapes[j / n].erase(gapes[j / n].begin());	// A listából kitöröljük, mert a legmélyebb index már foglalt
+							t[i + j] = 0;							// Az adott elem régi helye most már üres
+							gapes[j / n].push_back(i + j);			// Itt muszáj foglalkoznunk az újonnan felszabadult mezõ listába adásához, nem bízhatjuk rá egy jobbra lévõ sorra
+						}
+					}
+				}
+			}
+		}
 		break;
 	
 	case Direction::RIGHT:
-		
+
+		for (int i = n - 1; i >= 0; --i)					// az utolsó oszlop elejérõl akarunk indulni (n a négyzetalapú pálya oldalhossza)
+		{
+			for (int j = 0; j <= n * (n - 1); j += n)		// elindulunk az oszlop legeléjérõl
+			{
+				if (t[i + j] == 0)				// ha üres (=0) a cella
+				{
+					gapes[j / n].push_back(i + j);
+				}
+				else							// ha nem akkor...
+				{
+					int k = 1;
+					bool foundEq = false;
+					while (i + j - k >= j)		// megnézzük, hogy az adott elemtõl balra van-e egyezõség, üres cellákat kihagyva
+					{
+						if (t[i + j] == t[i + j - k])  // megtaláltuk a balra lévõ elsõ egyezõ elemet
+						{
+							t[i + j] *= 2;			// a jobb oldalit megduplázzuk
+							t[i + j - k] = 0;		// a bal oldalit eltünetjük
+
+							if (!gapes[j / n].empty())
+							{
+								t[*gapes[j / n].cbegin()] = t[i + j];
+								gapes[j / n].erase(gapes[j / n].begin());
+								t[i + j] = 0;
+							}
+
+							foundEq = true;
+							break;
+						}
+
+						if (t[i + j - k] != 0)	// balramenet nézzük a nullákat, ha kapunk egy olyat cellát ami nem nulla és nem is a keresett, akkor kilépünk
+						{
+							break;
+						}
+
+						++k;
+					}
+
+					if (!foundEq)	// ha nem találtunk egyezõséget alattunk
+					{
+						if (!gapes[j / n].empty())					// Ha van jobbra üres cella
+						{
+							t[*gapes[j / n].cbegin()] = t[i + j];		// Kiválasztjuk a legmélyebben lévõt (a lista legutolsóját), majd ide mozgatjuk az adott elemet
+							gapes[j / n].erase(gapes[j / n].begin());	// A listából kitöröljük, mert a legmélyebb index már foglalt
+							t[i + j] = 0;							// Az adott elem régi helye most már üres
+							gapes[j / n].push_back(i + j);			// Itt muszáj foglalkoznunk az újonnan felszabadult mezõ listába adásához, nem bízhatjuk rá egy balra lévõ sorra
+						}
+					}
+				}
+			}
+		}
 		break;
 	}
+
+	t[randomEmptyCellIndex()] = randomNewTile();
+
+	// check gameover
 }
 
 std::unique_ptr<Memento> Table::createMemento() const
