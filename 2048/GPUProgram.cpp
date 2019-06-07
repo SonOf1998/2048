@@ -43,12 +43,6 @@ void GPUProgram::checkLinking(unsigned int program) const
 	}
 }
 
-GPUProgram::GPUProgram()
-{
-	shaderProgramId = 0;
-}
-
-
 GPUProgram::~GPUProgram()
 {
 	glDeleteProgram(shaderProgramId);
@@ -59,7 +53,7 @@ unsigned int GPUProgram::getId() const
 	return shaderProgramId;
 }
 
-void GPUProgram::create(const char* const vertexSource, const char* const fragmentSource, const char* const fragmentShaderOutputName)
+void GPUProgram::create(const char* const vertexSource, const char* const fragmentSource)
 {
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	if (!vertexShader) {
@@ -88,15 +82,8 @@ void GPUProgram::create(const char* const vertexSource, const char* const fragme
 	glAttachShader(shaderProgramId, vertexShader);
 	glAttachShader(shaderProgramId, fragmentShader);
 
-	glBindFragDataLocation(shaderProgramId, 0, fragmentShaderOutputName);	
-
 	glLinkProgram(shaderProgramId);
 	checkLinking(shaderProgramId);
 
-	glUseProgram(shaderProgramId);
-}
-
-void GPUProgram::use() const
-{
 	glUseProgram(shaderProgramId);
 }

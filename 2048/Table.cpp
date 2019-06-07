@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Table.h"
 
+#include <iostream>
 #include <list>
 #include <numeric>
 #include <random>
@@ -9,7 +10,7 @@ int Table::randomEmptyCellIndex() const noexcept
 {
 	std::random_device rd;
 	std::mt19937 rng(rd());
-	std::uniform_int_distribution<int> uid(0, 16 - 1);
+	std::uniform_int_distribution<int> uid(0, n * n - 1);
 
 	int rand = uid(rng);
 
@@ -44,10 +45,33 @@ bool Table::isGameOver() const noexcept
 	return true;
 }
 
-Table::Table(int n = 0) : n(n)
+Table::Table(int n) : n(n)
 {
+	if (n < 4)
+	{
+		n = 4;
+	}
+
+	if (n > 6)
+	{
+		n = 6;
+	}
+	
+	t.reserve(n * n);
+	t = std::move(std::vector<int>(n * n, 0));
 	t[randomEmptyCellIndex()] = 2;
 	t[randomEmptyCellIndex()] = 2;
+}
+
+Table & Table::operator=(Table&& rhs)
+{
+	if (this != &rhs)
+	{
+		t = std::move(rhs.t);
+		n = rhs.n;
+	}
+
+	return *this;
 }
 
 bool Table::flip(Direction dir) noexcept
@@ -366,4 +390,16 @@ void Table::restore(Memento& memento)
 int Table::getPoints() const noexcept
 {
 	return std::accumulate(t.cbegin(), t.cend(), 0);
+}
+
+void Table::print() const noexcept
+{
+	for (int i = 0; i < n * n; i += n)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			std::cout << t[i + j] << " ";
+		}
+		std::cout << std::endl;
+	}
 }

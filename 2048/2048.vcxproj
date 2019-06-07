@@ -159,6 +159,7 @@
     <ClInclude Include="GPUProgram.h" />
     <ClInclude Include="Memento.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Table.h" />
   </ItemGroup>

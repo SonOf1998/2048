@@ -11,11 +11,10 @@ private:
 	void checkLinking(unsigned int) const;
 
 public:
-	GPUProgram();
+	GPUProgram() = default;
 	~GPUProgram();
 
 	unsigned int getId() const;
-	void create(const char* const, const char* const, const char* const);
-	void use() const;
+	void create(const char* const, const char* const);
 };
 
