@@ -32,9 +32,12 @@ int Table::randomNewTile() const noexcept
 	{
 		std::random_device rd;
 		std::mt19937 rng(rd());
-		std::uniform_int_distribution<int> uid(1, 2);
+		std::uniform_int_distribution<int> uid(1, 3);
 
-		return 2 * uid(rng);
+		if (uid(rng) == 3)	// 100pont felett 1/3 eséllyel már 4-es spawnol, különben csak kettes
+		{
+			return 4;
+		}
 	}
 	return 2;
 }
