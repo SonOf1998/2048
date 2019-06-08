@@ -30,25 +30,18 @@
 
 bool arrowHoldDown;
 
-GLuint VAO;
-GLuint VBO;
+GLuint VAO1, VAO2;
+GLuint VBO1, VBO2;
+GLuint TBO1, TBO2;
 GPUProgram gpuProgram;
 Shader shader;
 Table table;
 
-float tableV[] = {
-	-300.0f, -300.0f, 0.5f,	// bal alul
-	0.0f, 0.0f,
-	300.0f, -300.0f, 0.5f,	// jobb alul
-	1.0f, 0.0f,
-	300.0f, 300.0f,	0.5f,	// jobb felül
-	1.0f, 1.0f,
-	-300.0f, 300.0f, 0.5,	// bal felül
-	0.0f, 1.0f
-};
 
-unsigned int tableI[] = {0, 1, 2, 2, 3, 0};
-
+void fillTable()
+{
+	// BONYOLULT
+}
 
 #pragma region MiscellaneousHandlers
 void onKeyDown(unsigned char c, int x, int y) noexcept
@@ -68,32 +61,33 @@ void onArrowDown(int key, int x, int y) noexcept
 {
 	if (!arrowHoldDown)
 	{
+		// kissé hibásan.. elkerülhetõ a 4 if kidekorálása
 		arrowHoldDown = true;
 		PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
 
 		if (key == GLUT_KEY_UP)
 		{
 			table.flip(Direction::UP);
-			glutPostRedisplay();
 		}
 
 		if (key == GLUT_KEY_DOWN)
 		{
 			table.flip(Direction::DOWN);
-			glutPostRedisplay();
 		}
 
 		if (key == GLUT_KEY_LEFT)
 		{
 			table.flip(Direction::LEFT);
-			glutPostRedisplay();
 		}
 
 		if (key == GLUT_KEY_RIGHT)
 		{
 			table.flip(Direction::RIGHT);
-			glutPostRedisplay();
 		}
+
+		// szintén kissé hibásan.. elkerülhetõ a 4 if kidekorálása
+		fillTable();
+		glutPostRedisplay();
 
 		#ifdef DEBUG
 		std::cout << "----------------" << std::endl;
@@ -133,30 +127,45 @@ void onIdle()
 
 void onDisplay()
 {
+	glClearColor(1.0f, 0.5f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TBO1);
+	glUniform1i(glGetUniformLocation(gpuProgram.getId(), "smp"), 0);
+	glBindVertexArray(VAO1);
 	glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TBO2);
+	glUniform1i(glGetUniformLocation(gpuProgram.getId(), "smp"), 0);
+	glBindVertexArray(VAO2);
+	glDrawElements(GL_TRIANGLES, 4 * 3, GL_UNSIGNED_INT, nullptr);
 
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 	glutSwapBuffers();
 }
 
-void onInitialization()
+void sendDefaultTableDataToGPU()
 {
-	glViewport(0, 0, WIDTH, HEIGHT);
-	table = std::move(Table(4));
-	table.print();
+	float tableV[] = {
+	-310.0f, -310.0f, 0.5f,	// bal alul
+	0.0f, 0.0f,
+	310.0f, -310.0f, 0.5f,	// jobb alul
+	1.0f, 0.0f,
+	310.0f, 310.0f,	0.5f,	// jobb felül
+	1.0f, 1.0f,
+	-310.0f, 310.0f, 0.5,	// bal felül
+	0.0f, 1.0f
+	};
 
-	//std::cout << "should be 40 " <<table.getVertexData(2).size() << std::endl;
-	//std::cout << "should be 0 " <<table.getIndexData(3).size() << std::endl;
+	unsigned int tableI[] = { 0, 1, 2, 2, 3, 0 };
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &VAO1);
+	glBindVertexArray(VAO1);
 
-	GLuint TBO;
-	glGenTextures(1, &TBO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TBO);
+	glGenTextures(1, &TBO1);
+	glBindTexture(GL_TEXTURE_2D, TBO1);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -166,7 +175,7 @@ void onInitialization()
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char *data = stbi_load("C:/C++ graphics/2048/2048/textures/table.png", &width, &height, &nrChannels, 0);
-	
+
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -174,8 +183,8 @@ void onInitialization()
 	}
 	stbi_image_free(data);
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glGenBuffers(1, &VBO1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tableV), tableV, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)0);
@@ -187,6 +196,58 @@ void onInitialization()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tableI), tableI, GL_STATIC_DRAW);
 
+
+
+	// a táblán alapból elhelyezkedõ két kettes négyzet..
+	std::vector<float> tileV = std::move(table.getVertexData(2));
+	std::vector<unsigned int> tileI = std::move(table.getIndexData(2));
+	
+	glGenVertexArrays(1, &VAO2);
+	glBindVertexArray(VAO2);
+
+	glGenTextures(1, &TBO2);
+	glBindTexture(GL_TEXTURE_2D, TBO2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	data = stbi_load("C:/C++ graphics/2048/2048/textures/tile_2.png", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	stbi_image_free(data);
+
+	glGenBuffers(1, &VBO2);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tileV.size(), &tileV[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)0);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+
+	GLuint IBO2;
+	glGenBuffers(1, &IBO2);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * tileI.size(), &tileI[0], GL_STATIC_DRAW);
+}
+
+void onInitialization()
+{
+	glViewport(0, 0, WIDTH, HEIGHT);
+	table = std::move(Table(4));
+#ifdef DEBUG
+	table.print();
+#endif
+
+
+
+	sendDefaultTableDataToGPU();
+
 	gpuProgram.create(shader.VertexShader, shader.FragmentShader);
 
 	unsigned int location;
@@ -195,7 +256,7 @@ void onInitialization()
 	glm::mat4 V = glm::lookAt
 	(
 		glm::vec3(0.0f, 0.0f, 0.0f),	// camera position
-		glm::vec3(0.0f, 0.0f, 1.0f),	// where we looking from
+		glm::vec3(0.0f, 0.0f, -1.0f),	// where we looking from
 		glm::vec3(0.0f, 1.0f, 0.0f)		// up vector often (0,1,0), rarely (0, -1, 0) if we're upside down
 	);
 	glm::mat4 P = glm::ortho(-720.0f, +720.0f, -405.0f, +405.0f, -1.0f, +1.0f);
@@ -203,110 +264,10 @@ void onInitialization()
 	
 	location = glGetUniformLocation(gpuProgram.getId(), "MVP");
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(MVP));
-	location = glGetUniformLocation(gpuProgram.getId(), "ourTexture");
-	glUniform1i(location, 0);
 
 
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//int width, height, nrChannels;
-	//stbi_set_flip_vertically_on_load(true);
-	//unsigned char *data = stbi_load("C:/C++ graphics/9BallPool/9BallPool/textures/smiley.png", &width, &height, &nrChannels, 0);
-	//unsigned int texture0, texture1;
-	//
-	//
-	//glGenTextures(1, &texture0);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, texture0);
-	//
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	//
-	//
-	//
-	//
-	//if (data)
-	//{
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	//	glGenerateMipmap(GL_TEXTURE_2D);
-	//}
-	//
-	//stbi_image_free(data);
-	//
-	//glGenTextures(1, &texture1);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, texture1);
-	//
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//
-	//
-	//data = stbi_load("C:/C++ graphics/9BallPool/9BallPool/textures/box.jpg", &width, &height, &nrChannels, 0);
-	//if (data)
-	//{
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	//	glGenerateMipmap(GL_TEXTURE_2D);
-	//}
-	//
-	//stbi_image_free(data);
-	//
-	//
-	//glGenBuffers(1, &VBO);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)0);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(2);
-	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
-	//
-	//
-	//GLuint IBO;
-	//glGenBuffers(1, &IBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
-	//
-	//
-	//
-	//
-	//
-
-	
-	//
-	//glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -5.0));
-	//
-	//glm::mat4 viewMtx = glm::lookAt
-	//(
-	//	glm::vec3(0.0f, 2.0f, 0.0f),	// camera position
-	//	glm::vec3(0.0f, 0.0f, -5.0f),	// where we looking at
-	//	glm::vec3(0.0f, 1.0f, 0.0f)		// up vector often (0,1,0), rarely (0, -1, 0) if we're upside down
-	//);
-	//
-	//glm::mat4 projMtx = glm::perspective(glm::radians(45.0f), 1.0f * WIDTH / HEIGHT, 0.1f, 10.0f);
-	////glm::mat4 projMtx = glm::ortho(-2.0f, 2.0f, -2.0f, +2.0f, -1.0f, 1.0f);
-	//
-	//
-	//glm::mat4 mvp = projMtx * viewMtx * model;
-	//unsigned int location = glGetUniformLocation(gpuProgram.getId(), "M");
-	//glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mvp));
-	//
-	//
-	//
-	//
-	//
-	//location = glGetUniformLocation(gpuProgram.getId(), "ourTexture");
-	//glUniform1i(location, 0);
-	//location = glGetUniformLocation(gpuProgram.getId(), "ourTexture2");
-	//glUniform1i(location, 1);
-	//
-	//
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
@@ -357,7 +318,7 @@ void APIENTRY debugCallbackFunction(GLenum source, GLenum type, GLuint id, GLenu
 		break;
 
 	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-		_type = "UDEFINED BEHAVIOR";
+		_type = "UNDEFINED BEHAVIOR";
 		break;
 
 	case GL_DEBUG_TYPE_PORTABILITY:
@@ -423,7 +384,7 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	glEnable(GL_DEPTH_TEST);
-
+	glDepthFunc(GL_ALWAYS);
 
 	// enable instant error throw
 	glEnable(GL_DEBUG_OUTPUT);

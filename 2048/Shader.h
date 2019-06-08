@@ -35,11 +35,11 @@ struct Shader
 		in vec2 TexCoords;
 		out vec4 outColor;					
 
-		uniform sampler2D ourTexture;
+		uniform sampler2D smp;
 
 		void main()
 		{
-			outColor = texture(ourTexture, TexCoords);
+			outColor = texture(smp, TexCoords);
 		}
 	)";
 };

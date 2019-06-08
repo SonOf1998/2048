@@ -426,13 +426,13 @@ std::vector<float> Table::getVertexData(int x) const noexcept
 		{
 			if (t[i * n + j] == x)
 			{
-				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 + i * LENGTH / n); result.push_back(0.0f);	// bal felsõ csúcs x,y,z-je a pozíció függvényében
+				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// bal felsõ csúcs x,y,z-je a pozíció függvényében
 				result.push_back(0.0f); result.push_back(1.0f);																// bal felsõ csúcs textúra koordinátái
-				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 + i * LENGTH / n); result.push_back(0.0f);	// jobb felsõ csúcs x,y,z-je a pozíció függvényében
+				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// jobb felsõ csúcs x,y,z-je a pozíció függvényében
 				result.push_back(1.0f); result.push_back(1.0f);																		// jobb felsõ csúcs textúra koordinátái
-				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 + (i + 1) * LENGTH / n); result.push_back(0.0f);	// bal alsó csúcs x,y,z-je a pozíció függvényében
+				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 - (i + 1) * LENGTH / n); result.push_back(-0.5f);	// bal alsó csúcs x,y,z-je a pozíció függvényében
 				result.push_back(0.0f); result.push_back(0.0f);																		// bal alsó csúcs textúra koordinátái
-				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 + (i + 1) * LENGTH / n); result.push_back(0.0f);	// jobb alsó csúcs x,y,z-je a pozíció függvényében
+				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 - (i + 1) * LENGTH / n); result.push_back(-0.5f);	// jobb alsó csúcs x,y,z-je a pozíció függvényében
 				result.push_back(1.0f); result.push_back(0.0f);																			// jobb alsó csúcs textúra koordinátái
 			}
 		}
@@ -441,9 +441,9 @@ std::vector<float> Table::getVertexData(int x) const noexcept
 	return result;
 }
 
-std::vector<int> Table::getIndexData(int x) const noexcept
+std::vector<unsigned int> Table::getIndexData(int x) const noexcept
 {
-	std::vector<int> result;
+	std::vector<unsigned int> result;
 
 	int cnt = 0;
 
