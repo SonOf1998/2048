@@ -25,7 +25,6 @@
 #define WIDTH 1440
 #define HEIGHT 810
 
-
 bool arrowHoldDown;
 
 GLuint VAO;
@@ -47,16 +46,6 @@ float tableV[] = {
 
 unsigned int tableI[] = {0, 1, 2, 2, 3, 0};
 
-/*float tableV[] = {
-	-1.0f, -1.0f, 0.5f,	// bal alul
-	0.0f, 0.0f,
-	1.0f, -1.0f, 0.5f,	// jobb alul
-	1.0f, 0.0f,
-	1.0f, 1.0f,	0.5f,	// jobb felül
-	1.0f, 1.0f,
-	-1.0f, 1.0f, 0.5f,	// bal felül
-	0.0f, 1.0f
-};*/
 
 #pragma region MiscellaneousHandlers
 void onKeyDown(unsigned char c, int x, int y) noexcept
@@ -117,9 +106,6 @@ void onArrowRelease(int key, int x, int y) noexcept
 	}
 }
 
-
-
-
 void onKeyUp(unsigned char c, int x, int y)
 {
 
@@ -156,6 +142,9 @@ void onInitialization()
 	glViewport(0, 0, WIDTH, HEIGHT);
 	table = std::move(Table(4));
 	table.print();
+
+	//std::cout << "should be 40 " <<table.getVertexData(2).size() << std::endl;
+	//std::cout << "should be 0 " <<table.getIndexData(3).size() << std::endl;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
