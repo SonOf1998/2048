@@ -25,8 +25,8 @@ public:
 
 	bool flip(Direction) noexcept;
 	bool flipAllowed(Direction) const noexcept;
-	std::unique_ptr<Memento> createMemento() const;
-	void restore(Memento&);
+	Memento* createMemento() const;
+	void restore(Memento*);
 	int getPoints() const noexcept;
 	void print() const noexcept;	// for debug
 

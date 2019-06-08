@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#define DEBUG
+//#define DEBUG
 
 #include "GPUProgram.h"
 #include "Shader.h"
@@ -45,6 +45,7 @@ std::vector<int> numOfTris;
 GPUProgram gpuProgram;
 Shader shader;
 Table table;
+Memento *memento = nullptr;
 
 
 void fillTable()
@@ -116,54 +117,79 @@ void onKeyDown(unsigned char c, int x, int y) noexcept
 {
 	if (c == ESC)
 	{
+		if (memento != nullptr)
+		{
+			delete memento;
+		}
 		exit(0);
 	}
 
-	if (c == SPACE && !undoUsed)
+	if (c == SPACE && !undoUsed && !firstRun)
 	{
-	
-
+		table.restore(memento);
+		fillTable();
+		glutPostRedisplay();
 		undoUsed = true;
+		PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\revert.wav"), NULL, SND_ASYNC | SND_FILENAME);
 	}
+}
+
+void manageLastState()
+{
+	if (memento != nullptr)
+	{
+		delete memento;
+	}
+
+	memento = table.createMemento();
 }
 
 void onArrowDown(int key, int x, int y) noexcept
 {
 	if (!arrowHoldDown)
 	{
-		// kissé hibásan.. elkerülhetõ a 4 if kidekorálása
-		arrowHoldDown = true;
-		PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
-
-		if (key == GLUT_KEY_UP)
+		if (key == GLUT_KEY_UP && table.flipAllowed(Direction::UP))
 		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
+			arrowHoldDown = true;
 			undoUsed = false;
 			firstRun = false;
+			manageLastState();
 			table.flip(Direction::UP);
-		}
-
-		if (key == GLUT_KEY_DOWN)
+		} 
+		else if (key == GLUT_KEY_DOWN && table.flipAllowed(Direction::DOWN))
 		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
+			arrowHoldDown = true;
 			undoUsed = false;
 			firstRun = false;
+			manageLastState();
 			table.flip(Direction::DOWN);
-		}
-
-		if (key == GLUT_KEY_LEFT)
+		} 
+		else if (key == GLUT_KEY_LEFT && table.flipAllowed(Direction::LEFT))
 		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
+			arrowHoldDown = true;
 			undoUsed = false;
 			firstRun = false;
+			manageLastState();
 			table.flip(Direction::LEFT);
 		}
-
-		if (key == GLUT_KEY_RIGHT)
+		else if (key == GLUT_KEY_RIGHT && table.flipAllowed(Direction::RIGHT))
 		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
+			arrowHoldDown = true;
 			undoUsed = false;
 			firstRun = false;
+			manageLastState();
 			table.flip(Direction::RIGHT);
+		} 
+		else
+		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\error.wav"), NULL, SND_ASYNC | SND_FILENAME);
+			return;
 		}
 
-		// szintén kissé hibásan.. elkerülhetõ a 4 if kidekorálása
 		fillTable();
 		glutPostRedisplay();
 
@@ -361,6 +387,8 @@ void onInitialization()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	firstRun = true;
+
+	memento = table.createMemento();
 }
 
 
@@ -502,6 +530,11 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(onArrowRelease);
 
 	glutMainLoop();
+
+	if (memento != nullptr)
+	{
+		delete memento;
+	}
 	exit(EXIT_SUCCESS);
 
 	return 0;

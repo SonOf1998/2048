@@ -9,6 +9,7 @@
 #define POSX0 -300.0f
 #define POSY0 300.0f
 #define LENGTH 600.0f
+#define GAP 2.0f
 
 int Table::randomEmptyCellIndex() const noexcept
 {
@@ -384,14 +385,14 @@ bool Table::flipAllowed(Direction dir) const noexcept
 	return false;
 }
 
-std::unique_ptr<Memento> Table::createMemento() const
+Memento* Table::createMemento() const
 {
-	return std::unique_ptr<Memento>(new Memento(t));
+	return new Memento(t);
 }
 
-void Table::restore(Memento& memento)
+void Table::restore(Memento* memento)
 {
-	t = std::move(memento.t);
+	t = std::move(memento->t);
 }
 
 int Table::getPoints() const noexcept
@@ -429,14 +430,14 @@ std::vector<float> Table::getVertexData(int x) const noexcept
 		{
 			if (t[i * n + j] == x)
 			{
-				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// bal felsõ csúcs x,y,z-je a pozíció függvényében
-				result.push_back(0.0f); result.push_back(1.0f);																// bal felsõ csúcs textúra koordinátái
-				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// jobb felsõ csúcs x,y,z-je a pozíció függvényében
+				result.push_back(GAP + POSX0 + j * LENGTH / n); result.push_back(- GAP + POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// bal felsõ csúcs x,y,z-je a pozíció függvényében
+				result.push_back(0.0f); result.push_back(1.0f);																	// bal felsõ csúcs textúra koordinátái
+				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(- GAP + POSY0 - i * LENGTH / n); result.push_back(-0.5f);	// jobb felsõ csúcs x,y,z-je a pozíció függvényében
 				result.push_back(1.0f); result.push_back(1.0f);																		// jobb felsõ csúcs textúra koordinátái
-				result.push_back(POSX0 + j * LENGTH / n); result.push_back(POSY0 - (i + 1) * LENGTH / n); result.push_back(-0.5f);	// bal alsó csúcs x,y,z-je a pozíció függvényében
+				result.push_back(GAP + POSX0 + j * LENGTH / n); result.push_back(POSY0 - (i + 1) * LENGTH / n); result.push_back(-0.5f);	// bal alsó csúcs x,y,z-je a pozíció függvényében
 				result.push_back(0.0f); result.push_back(0.0f);																		// bal alsó csúcs textúra koordinátái
 				result.push_back(POSX0 + (j + 1) * LENGTH / n); result.push_back(POSY0 - (i + 1) * LENGTH / n); result.push_back(-0.5f);	// jobb alsó csúcs x,y,z-je a pozíció függvényében
-				result.push_back(1.0f); result.push_back(0.0f);																			// jobb alsó csúcs textúra koordinátái
+				result.push_back(1.0f); result.push_back(0.0f);																				// jobb alsó csúcs textúra koordinátái
 			}
 		}
 	}
