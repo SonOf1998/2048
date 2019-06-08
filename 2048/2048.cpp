@@ -8,6 +8,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "ft2build.h"
+#include FT_FREETYPE_H
 
 #include <glew.h>
 #include <freeglut.h>
@@ -96,7 +98,7 @@ void fillTable()
 		GLuint VBO;
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tileV.size(), &tileV[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tileV.size(), &tileV[0], GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)0);
 		glEnableVertexAttribArray(2);
@@ -105,7 +107,7 @@ void fillTable()
 		GLuint IBO;
 		glGenBuffers(1, &IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * tileI.size(), &tileI[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * tileI.size(), &tileI[0], GL_DYNAMIC_DRAW);
 
 		numOfTris.push_back(tileI.size());
 		distinctElementCnt = ++i;
@@ -353,6 +355,7 @@ void sendDefaultTableDataToGPU()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO2);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * tileI.size(), &tileI[0], GL_STATIC_DRAW);
 }
+
 
 void onInitialization()
 {
