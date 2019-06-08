@@ -403,3 +403,37 @@ void Table::print() const noexcept
 		std::cout << std::endl;
 	}
 }
+
+std::set<int> Table::getUniqueElements() const noexcept
+{
+	std::set<int> result(t.cbegin(), t.cend());
+	result.erase(0);
+
+	return result;
+}
+
+std::vector<float> Table::getVertexData(int x) const noexcept
+{
+	std::vector<float> result;
+
+	for (int i = 0; i < n * n; i += n)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			if (t[i + j] == x)
+			{
+
+			}
+		}
+	}
+
+	return result;
+}
+
+std::vector<int> Table::getIndexData(int x) const noexcept
+{
+	std::vector<int> result;
+
+
+	return result;
+}

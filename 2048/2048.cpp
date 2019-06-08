@@ -28,13 +28,35 @@
 
 bool arrowHoldDown;
 
+GLuint VAO;
 GLuint VBO;
 GPUProgram gpuProgram;
 Shader shader;
 Table table;
 
+float tableV[] = {
+	-300.0f, -300.0f, 0.5f,	// bal alul
+	0.0f, 0.0f,
+	300.0f, -300.0f, 0.5f,	// jobb alul
+	1.0f, 0.0f,
+	300.0f, 300.0f,	0.5f,	// jobb felül
+	1.0f, 1.0f,
+	-300.0f, 300.0f, 0.5,	// bal felül
+	0.0f, 1.0f
+};
 
+unsigned int tableI[] = {0, 1, 2, 2, 3, 0};
 
+/*float tableV[] = {
+	-1.0f, -1.0f, 0.5f,	// bal alul
+	0.0f, 0.0f,
+	1.0f, -1.0f, 0.5f,	// jobb alul
+	1.0f, 0.0f,
+	1.0f, 1.0f,	0.5f,	// jobb felül
+	1.0f, 1.0f,
+	-1.0f, 1.0f, 0.5f,	// bal felül
+	0.0f, 1.0f
+};*/
 
 #pragma region MiscellaneousHandlers
 void onKeyDown(unsigned char c, int x, int y) noexcept
@@ -122,7 +144,10 @@ void onIdle()
 void onDisplay()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glDrawElements(GL_TRIANGLES, 12 * 3, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+
+
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
 	glutSwapBuffers();
 }
 
@@ -132,6 +157,64 @@ void onInitialization()
 	table = std::move(Table(4));
 	table.print();
 
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	GLuint TBO;
+	glGenTextures(1, &TBO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TBO);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load("C:/C++ graphics/2048/2048/textures/table.png", &width, &height, &nrChannels, 0);
+	
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	stbi_image_free(data);
+
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tableV), tableV, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)0);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+
+	GLuint IBO;
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tableI), tableI, GL_STATIC_DRAW);
+
+	gpuProgram.create(shader.VertexShader, shader.FragmentShader);
+
+	unsigned int location;
+
+	glm::mat4 M = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
+	glm::mat4 V = glm::lookAt
+	(
+		glm::vec3(0.0f, 0.0f, 0.0f),	// camera position
+		glm::vec3(0.0f, 0.0f, 1.0f),	// where we looking from
+		glm::vec3(0.0f, 1.0f, 0.0f)		// up vector often (0,1,0), rarely (0, -1, 0) if we're upside down
+	);
+	glm::mat4 P = glm::ortho(-720.0f, +720.0f, -405.0f, +405.0f, -1.0f, +1.0f);
+	glm::mat4 MVP = M * V * P;
+	
+	location = glGetUniformLocation(gpuProgram.getId(), "MVP");
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(MVP));
+	location = glGetUniformLocation(gpuProgram.getId(), "ourTexture");
+	glUniform1i(location, 0);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//int width, height, nrChannels;
 	//stbi_set_flip_vertically_on_load(true);
@@ -201,7 +284,7 @@ void onInitialization()
 	//
 	//
 
-	gpuProgram.create(shader.VertexShader, shader.FragmentShader);
+	
 	//
 	//glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -5.0));
 	//
