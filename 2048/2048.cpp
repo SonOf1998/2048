@@ -20,6 +20,9 @@
 #include <iostream>
 #include <vector>
 
+#include <mmsystem.h>
+#include <Windows.h>
+
 #define ESC 27
 #define SPACE 32
 #define WIDTH 1440
@@ -66,6 +69,7 @@ void onArrowDown(int key, int x, int y) noexcept
 	if (!arrowHoldDown)
 	{
 		arrowHoldDown = true;
+		PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\swipe.wav"), NULL, SND_ASYNC | SND_FILENAME);
 
 		if (key == GLUT_KEY_UP)
 		{
