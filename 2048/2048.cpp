@@ -60,7 +60,7 @@ void fillTable()
 	numOfTris.clear();
 
 	int i = 0;
-	std::set<int> uniqueElems = table.getUniqueElements();
+	std::set<int> uniqueElems = std::move(table.getUniqueElements());
 	size_t s = uniqueElems.size();
 
 	VAO.reserve(s);
@@ -198,7 +198,7 @@ void onArrowDown(int key, int x, int y) noexcept
 		glutPostRedisplay();
 
 
-		if (gameEnd)	// fejlesztenivalÛ, j·tÈk vÈge men¸ stbstb..
+		if (gameEnd)	// fejlesztenival√≥, j√°t√©k v√©ge men√º stbstb..
 		{
 			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\defeat.wav"), NULL, SND_SYNC | SND_FILENAME);
 			if (memento != nullptr)
@@ -294,9 +294,9 @@ void sendDefaultTableDataToGPU()
 	0.0f, 0.0f,
 	310.0f, -310.0f, 0.5f,	// jobb alul
 	1.0f, 0.0f,
-	310.0f, 310.0f,	0.5f,	// jobb fel¸l
+	310.0f, 310.0f,	0.5f,	// jobb fel√ºl
 	1.0f, 1.0f,
-	-310.0f, 310.0f, 0.5,	// bal fel¸l
+	-310.0f, 310.0f, 0.5,	// bal fel√ºl
 	0.0f, 1.0f
 	};
 
@@ -340,7 +340,7 @@ void sendDefaultTableDataToGPU()
 
 
 
-	// a t·bl·n alapbÛl elhelyezkedı kÈt kettes nÈgyzet..
+	// a t√°bl√°n alapb√≥l elhelyezked√µ k√©t kettes n√©gyzet..
 	std::vector<float> tileV = std::move(table.getVertexData(2));
 	std::vector<unsigned int> tileI = std::move(table.getIndexData(2));
 	
@@ -533,7 +533,7 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
 	
-	glEnable(GL_BLEND);								// text˙r·ban az ·tl·tszÛ rÈsz Ìgy nem szolid fekete lesz
+	glEnable(GL_BLEND);								// text√∫r√°ban az √°tl√°tsz√≥ r√©sz √≠gy nem szolid fekete lesz
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	// enable instant error throw
@@ -543,7 +543,7 @@ int main(int argc, char** argv)
 
 
 
-	// full nulla Z-knÈl megfordÌtja a rajzol·si ir·nyt. A kÈsıbb jˆvık nem mennek ·t a depth testen, azok lesznek alul.
+	// full nulla Z-kn√©l megford√≠tja a rajzol√°si ir√°nyt. A k√©s√µbb j√∂v√µk nem mennek √°t a depth testen, azok lesznek alul.
 	onInitialization();
 
 	glutDisplayFunc(onDisplay);
@@ -568,9 +568,9 @@ int main(int argc, char** argv)
 
 /*
 
-VAO - Cs˙csok eloszl·s·t + indexelÈst p·rosÌtja (VBO + IBO)
-TBO - Text˙r·z·st azonosÌt maximum 16-32 db-ot egymag·ba. Be·llÌtjuk aktÌvnak az elsı elÈrhetıt Ès oda fˆlvessz¸k a nÈgyzet text˙r·j·t.
-VBO - Cs˙csok eloszl·sa
-IBO - Cs˙csok sorrendisÈge
+VAO - Cs√∫csok eloszl√°s√°t + indexel√©st p√°ros√≠tja (VBO + IBO)
+TBO - Text√∫r√°z√°st azonos√≠t maximum 16-32 db-ot egymag√°ba. Be√°ll√≠tjuk akt√≠vnak az els√µ el√©rhet√µt √©s oda f√∂lvessz√ºk a n√©gyzet text√∫r√°j√°t.
+VBO - Cs√∫csok eloszl√°sa
+IBO - Cs√∫csok sorrendis√©ge
 
 */
