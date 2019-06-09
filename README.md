@@ -1,9 +1,9 @@
 # 2048 version 1.0
 
-4x4 grid. (supports any arbitrary sized tables, but due to the lack of a so-called "menu" you cannot change it during the runtime yet)
-Undo operation included (by pressing SPACE). (Achieved by Memento design pattern)
-Sound effects.
-Control: Arrows
+4x4 grid. (supports any arbitrary sized tables, but due to the lack of a so-called "menu" you cannot change it during the runtime yet)<br />
+Undo operation included (by pressing SPACE). (Achieved by Memento design pattern)<br />
+Sound effects.<br />
+Control: Arrows<br />
 
 Used libs:
   glew32
