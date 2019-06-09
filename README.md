@@ -5,17 +5,17 @@ Undo operation included (by pressing SPACE). (Achieved by Memento design pattern
 Sound effects.<br />
 Control: Arrows<br />
 
-Used libs:
-  glew32
-  freeglut
-  stbi_load
-  freetype
+Used libs:<br />
+  glew32<br />
+  freeglut<br />
+  stbi_load<br />
+  freetype<br />
 
 ![Alt text](https://user-images.githubusercontent.com/40013370/59162136-45d4ce00-8aec-11e9-8c87-9ff147e5ca04.png)
 
-Plans for v2.0:
-  Menu capable of changing the table size before the actual game starts.
-  GameOver texts, ability to restart game.
+Plans for v2.0:<br />
+  Menu capable of changing the table size before the actual game starts.<br />
+  GameOver texts, ability to restart game.<br />
 
-Long-term:
-  Substitute the pink bg =)
+Long-term:<br />
+  Substitute the pink bg =)<br />
