@@ -28,6 +28,7 @@ public:
 	Memento* createMemento() const;
 	void restore(Memento*);
 	int getPoints() const noexcept;
+	bool detect2048() const noexcept;
 	void print() const noexcept;	// for debug
 
 	std::set<int> getUniqueElements() const noexcept;		// megadja egy halmazban, hogy milyen értékek vannak a táblában.. Ha 0 is van azt nem, mivel nem textúrázzuk

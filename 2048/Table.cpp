@@ -400,6 +400,11 @@ int Table::getPoints() const noexcept
 	return std::accumulate(t.cbegin(), t.cend(), 0);
 }
 
+bool Table::detect2048() const noexcept
+{
+	return std::any_of(t.cbegin(), t.cend(), [](int i) {return i == 2048; });
+}
+
 void Table::print() const noexcept
 {
 	for (int i = 0; i < n * n; i += n)

@@ -148,6 +148,8 @@ void manageLastState()
 
 void onArrowDown(int key, int x, int y) noexcept
 {
+	static bool gameEnd;
+
 	if (!arrowHoldDown)
 	{
 		if (key == GLUT_KEY_UP && table.flipAllowed(Direction::UP))
@@ -157,7 +159,7 @@ void onArrowDown(int key, int x, int y) noexcept
 			undoUsed = false;
 			firstRun = false;
 			manageLastState();
-			table.flip(Direction::UP);
+			gameEnd = table.flip(Direction::UP);
 		} 
 		else if (key == GLUT_KEY_DOWN && table.flipAllowed(Direction::DOWN))
 		{
@@ -166,7 +168,7 @@ void onArrowDown(int key, int x, int y) noexcept
 			undoUsed = false;
 			firstRun = false;
 			manageLastState();
-			table.flip(Direction::DOWN);
+			gameEnd = table.flip(Direction::DOWN);
 		} 
 		else if (key == GLUT_KEY_LEFT && table.flipAllowed(Direction::LEFT))
 		{
@@ -175,7 +177,7 @@ void onArrowDown(int key, int x, int y) noexcept
 			undoUsed = false;
 			firstRun = false;
 			manageLastState();
-			table.flip(Direction::LEFT);
+			gameEnd = table.flip(Direction::LEFT);
 		}
 		else if (key == GLUT_KEY_RIGHT && table.flipAllowed(Direction::RIGHT))
 		{
@@ -184,7 +186,7 @@ void onArrowDown(int key, int x, int y) noexcept
 			undoUsed = false;
 			firstRun = false;
 			manageLastState();
-			table.flip(Direction::RIGHT);
+			gameEnd = table.flip(Direction::RIGHT);
 		} 
 		else
 		{
@@ -194,6 +196,26 @@ void onArrowDown(int key, int x, int y) noexcept
 
 		fillTable();
 		glutPostRedisplay();
+
+		if (table.detect2048())
+		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\victory.wav"), NULL, SND_SYNC | SND_FILENAME);
+			if (memento != nullptr)
+			{
+				delete memento;
+			}
+			exit(0);
+		}
+
+		if (gameEnd)	// fejlesztenivaló, játék vége menü stbstb..
+		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\defeat.wav"), NULL, SND_SYNC | SND_FILENAME);
+			if (memento != nullptr)
+			{
+				delete memento;
+			}
+			exit(0);
+		}
 
 		#ifdef DEBUG
 		std::cout << "----------------" << std::endl;
