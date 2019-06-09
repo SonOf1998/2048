@@ -197,15 +197,6 @@ void onArrowDown(int key, int x, int y) noexcept
 		fillTable();
 		glutPostRedisplay();
 
-		if (table.detect2048())
-		{
-			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\victory.wav"), NULL, SND_SYNC | SND_FILENAME);
-			if (memento != nullptr)
-			{
-				delete memento;
-			}
-			exit(0);
-		}
 
 		if (gameEnd)	// fejlesztenivaló, játék vége menü stbstb..
 		{
@@ -229,6 +220,16 @@ void onArrowRelease(int key, int x, int y) noexcept
 	if (arrowHoldDown)
 	{
 		arrowHoldDown = false;
+
+		if (table.detect2048())
+		{
+			PlaySound(TEXT("C:\\C++ graphics\\2048\\2048\\sound\\victory.wav"), NULL, SND_SYNC | SND_FILENAME);
+			if (memento != nullptr)
+			{
+				delete memento;
+			}
+			exit(0);
+		}
 	}
 }
 
